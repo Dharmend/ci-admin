@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Indiatoday Election Result</title><meta http-equiv="Access-Control-Allow-Origin" content="*" /><meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"><style>
+* {margin: 0;padding: 0 } body{font: bold 12px/15px 'Roboto', sans-serif;} ul li {list-style: none } .swiper-container .swiper-wrapper li {border-radius: 5px;background: #fff } .swiper-container .swiper-wrapper .swiper-slide.swiper-slide-active {} .swiper-container {padding: 5px;width: 130px;height: 119px;position: absolute;box-sizing: border-box;} .swiper-slide {background-position: center;background-size: cover;} 
+
+#flip3dSlider table {width:100%;}
+#flip3dSlider table { border-radius:6px;-moz-border-radius:6px; width:130px;height:119px; font-family: "Open Sans", sans-serif;  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
+#flip3dSlider table tr td { font-family: "Open Sans", sans-serif; font-size:10px; color:#000; text-align:left;}
+#flip3dSlider .heading { margin:0px auto; font-family: "Open Sans", sans-serif; font-size:14px; color:#fff; background-color:#54b635; text-align:center; }
+#flip3dSlider .title {  margin:0px auto; font-family: "Open Sans", sans-serif; font-size:12px; font-weight:400; color:#000; text-align:center;  border-bottom:4px solid #fff; border-top:4px solid #fff;}
+#flip3dSlider .party1 {background-color:#ff4300; font-weight:600; color:#fff; border-bottom:4px solid #fff; border-left:4px solid #fff; border-top:4px solid #fff; }
+#flip3dSlider .party2 {background-color:#00a5ff; font-weight:600; color:#fff; border-bottom:4px solid #fff; border-left:4px solid #fff; }
+#flip3dSlider .party3 {background-color:#00b500; font-weight:600; color:#fff; border-bottom:4px solid #fff; border-left:4px solid #fff; }</style></head><body><div class="swiper-container" id="flip3dSlider"><ul class="swiper-wrapper"></ul></div>	
+	<script type="text/javascript">
+		function getUrlVars() {
+			var vars = {};
+			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+			vars[key] = value;
+			});
+			return vars;
+		}
+		
+	
+		var dataUrl = getUrlVars()["id"];
+		if(dataUrl!=='undefined') {
+			function loadScript(url, callback) {var script = document.createElement("script");script.type = "text/javascript";script.async = true;if (script.readyState) {script.onreadystatechange = function () {if (script.readyState == "loaded" || script.readyState == "complete") {script.onreadystatechange = null;if (callback && typeof callback === "function"){callback();}}};} else {script.onload = function () {if (callback && typeof callback === "function") {callback();}};}script.src = url;(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);}	
+		
+			var loadDeferredStyles = function() {var cssStyleTextContent = '<link rel="stylesheet" type="text/css" href="'+MEDIA_PATH+'css/swiper.min.css">'; cssStyleTextContent += '<link data-brackets-id="117" rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,500,900">';var replacement = document.createElement("div");replacement.innerHTML = cssStyleTextContent;document.body.appendChild(replacement)}	
+			var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame ;
+		
+			var MEDIA_PATH = 'https://smedia2.intoday.in/elections/2018/html/v1.1/resources/cube/';
+			var dataURL = 'data/'+dataUrl+'.json';
+			
+			loadScript(MEDIA_PATH+"js/jquery1.8.js",function() {
+				if (raf) raf(function() {window.setTimeout(loadDeferredStyles, 0); });else window.addEventListener('load', loadDeferredStyles);
+				loadScript(MEDIA_PATH+"js/swiper.min.js",function() {
+				updateJson();
+				
+				});
+			});
+			
+			//alert(dataURL);
+			//var dataURL = 'data.json';
+			var isActiveCube = 0; 
+			var slides = [];
+			var slideStr = [];
+			var isInit=1;
+			var swiper;
+			var activeSlide = 0;
+			var cCandi = 0;
+			var shouldRefreshSlide = 1;
+			function updateJson() {
+				//console.log('Update Json', dataURL);
+				$.getJSON(dataURL,function( data ) {
+					var dt = new Date();
+					//console.log('data',data); 
+					$.each( data, function( key, val ) {					
+						if('status_code'==key) {
+							isActiveCube = val; 
+						} else if('slides'==key) {
+							slides = val;
+						}
+					});
+					//console.log(slides);
+					drawSlides();
+				});
+			};
+
+			function drawSlides() {
+				//console.log('Draw Slides', slides);
+				slideStr = [];
+				if(swiper) {
+					activeSlide = swiper.realIndex;
+				}
+				//console.log('activeSlide='+activeSlide);
+				var strSlides = '';
+				var str = '';
+				for(slideNo=0;slideNo<slides.length;slideNo++) {
+					var slide = slides[slideNo];
+					//console.log('slide',slide);
+					//console.log('#slide_'+slide.slide_id);
+					//console.log(activeSlide+'!='+slideNo);
+					if(isInit) {
+						$('.swiper-wrapper').append('<li class="swiper-slide front slide_'+slide.slide_id+'"  id="slide_'+slide.slide_id+'">&nbsp;</li>');
+						//console.log('append slide_'+slide.slide_id);
+					}
+					var rows = 4;
+					var cols = 4;
+					var str = '<table><tr><td colspan="4" class="heading">'+slide.slide_title+'</td></tr>';
+					if(slide.slide_heading!='')
+						str += '<tr><td colspan="4" class="title">'+slide.slide_heading+'</td></tr>';
+					str += '';	 
+					var x=0;
+					var s=0;
+					for(var i=0;i<rows;i++) {
+						var x=i*4;	
+						s++;
+						str += '<tr>';
+						var tdArr = new Array();
+						for(var j=1;j<=cols;j++) {
+							y=x+j;
+							var val = eval('slide.col'+y);
+							if(val!==undefined && val!='') {
+								tdArr.push(val);
+								//str += '<td>'+val+'</td>';
+							}				
+						}
+						
+						for(var td =0;td<tdArr.length;td++) {
+							var tdVal = tdArr[td];
+							if(tdArr.length==1) {
+								str += '<td colspan="4">'+tdVal+'</td>';
+							}
+							else if(tdArr.length==2) {
+								str += '<td colspan="2">'+tdVal+'</td>';
+							}
+							else if(tdArr.length==3 && td==2) {
+								str += '<td colspan="4">'+tdVal+'</td>';
+							} else {
+								str += '<td >'+tdVal+'</td>';
+							}
+							
+						}
+						str += '</tr>';	
+					}					 
+					str += '</table>';					
+					slideStr.push(new Array(slide.slide_id,str));
+					strSlides += str;
+					
+				}			
+				updateSlides();
+			}
+			function updateSlides() {
+				var str = '';
+				for(z=0;z<slideStr.length;z++) {
+					$('.slide_'+slideStr[z][0]).html(slideStr[z][1]).fadeIn('slow');
+				}
+				if(isInit) {
+					isInit =0;
+					initSwiper();			
+				} 
+				var dt = new Date();
+				//console.log('Swiper updated '+dt);
+				swiper.update();
+			}	
+			function initSwiper() {
+				//console.log('Init Swiper');
+				swiper = new Swiper('#flip3dSlider.swiper-container', {
+					effect: 'cube',
+					grabCursor: true,
+					autoplay: true,
+					speed: 1000,
+					loop: true,
+					observer: false,
+					cubeEffect: {
+						shadow: true,
+						slideShadows: true,
+						shadowOffset: 8,
+						shadowScale: 0.65,
+					},
+
+				});
+				swiper.on('fromEdge', function () {
+					//console.log('fromEdge'+shouldRefreshSlide);
+					if(shouldRefreshSlide) {
+						var dt = new Date();
+						//swiper.update();				
+						//console.log('Swiper updated '+dt);
+						shouldRefreshSlide = 0;
+					}
+				});
+				var myVar = setInterval(refreshSlide, 12000);
+			}	
+			
+			function refreshSlide() {
+				//console.log('refreshSlide'+shouldRefreshSlide);
+				updateJson();
+				shouldRefreshSlide = 1;
+			}
+		}
+	</script>
+</body></html>
